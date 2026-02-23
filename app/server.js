@@ -10,6 +10,10 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
+app.get("/", (req, res) => {
+  res.send("Secure-CRUD API is running 🚀");
+});
+
 // Simple Schema
 const TaskSchema = new mongoose.Schema({
     title: String
@@ -33,6 +37,16 @@ app.get("/tasks", async (req, res) => {
 app.delete("/tasks/:id", async (req, res) => {
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: "Deleted" });
+});
+
+// UPDATE
+app.put("/tasks/:id", async (req, res) => {
+  const updatedTask = await Task.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.json(updatedTask);
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));

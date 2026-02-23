@@ -1,21 +1,25 @@
-version: '3.8'
-
 services:
-  app:
-    build: .
-    ports:
-      - "5000:5000"
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/securecrud
-    depends_on:
-      - mongo
 
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
+  db:
+    image: mongo
     volumes:
       - mongo_data:/data/db
+
+  app:
+    build: .
+    environment:
+      - MONGO_URI=mongodb://db:27017/securecrud
+    depends_on:
+      - db
+
+  proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
 
 volumes:
   mongo_data:
